@@ -1,0 +1,511 @@
+I was going to tweak this treehouse sass-project so I could more properly call it my own, but I need to move on to another thing.
+It was very useful to tackle this, as I got a greater grasp of what sass is, how it works, and how to read it.
+Also, I got a better sense of organization and structure (which seem to be often my pitfalls).
+Where does everything go? No need to reinvent the wheel! There are patterns out there, and from there one can build. Choose what works best for you.
+Overall, I felt I was not doing just markup anymore, but working towards greater abstraction.
+The notes that I added are one personal mess. As with everything that seems relevant...I need to keep working on it. 
+
+
+This was very helpful in an unexpected way.
+by force of repetition I started understanding how things worked
+
+
+Call me crazy but I feel I learn JS as I tackle sass. So much of the grammar is the same. 
+
+
+
+First you start with global variables for fonts.
+
+
+calculations
+em function 
+font-size: em(48px) 0;
+line-height: (46px/42px);
+
+margin-bottom: em(78px, 42px);
+
+variable arguments ...
+& ancestors?
+
+
+Things have a funny way of working themselves out.  
+
+Sintactically awesome sheets.
+Preprocessor
+
+@include for mixin
+@import imports a file
+
+@mixin box0sizing($x) {
+-webkit-box-sizing: $x;
+-moz-box-sizing: $x;
+box-sizing: $x;	
+}
+
+.content {
+	@include box-sizing(border-box);
+	border: 1px solid #ccc;
+	padding: 20px;
+}
+
+.callout {
+	@include box-sizing(content-box);
+}
+
+
+@mixin box0sizing($x: border-box) {
+-webkit-box-sizing: $x;
+-moz-box-sizing: $x;
+box-sizing: $x;	
+}
+//if nothing is pass for a value, border-box is used by default. 
+
+
+
+
+I made some notes about BEM pattern, but I kinda lost them.
+The jest of it is
+
+Block Element Modifier
+
+.block__element--modifier
+and you create mixins and extends around that pattern.
+
+Most interesting mixins: 
+// BEM selectors
+
+@mixin e($element) {
+	&__#{$element} {
+    @content;
+  }
+}
+@mixin m($modifier) {
+  &--#{$modifier} {
+    @content;
+  }
+}
+
+The media queries were good too.
+
+
+
+
+I thought SMACSS was more interesting..for some reason..
+scalable and modulable architecture for css. 
+We divide our layout in:
+base : what elements look like by default
+layout : define layout styles for major sections of a page. 
+modules: styles are written for each module as stand-alone reusable components. 
+state : define styles for element states (collapsed, visible, hidden? JS plays a role here...)
+themes : define different colors and images to give project a different theme.
+optional:
+Utilities: config, functions, helpers, mixins, index
+
+Sassy starter on github, probably a good way to start a project.
+https://github.com/minamarkham/sassy-starter
+
+SMACSS thinks in terms of objects, which are called modules.
+Modules are small chunks of functionality.
+
+One thing that comes up here is "Plural Parent Pattern", where the parent is
+in plural (tabs) and the child singular(tab).
+.button{
+
+	&:hover {
+
+	}
+}
+.dropdown-button {
+	@extend .button
+	&::after {
+
+	}
+}
+
+
+for modifiers, here is how we do it: 
+.tab {
+
+	$.is-selected{
+
+	}
+}
+
+
+
+modifiers for different size textboxes:
+.textbox{
+	$:focus {
+
+	}
+	$.large {
+
+	}
+	$.small {
+
+	}
+}
+
+
+
+
+.callout {
+	@include box-sizing;
+}
+
+
+@mixin button($radius, $color) {
+	border-radius: $radius;
+	color: $color;
+}
+
+.btn-a {
+	@include button(4px, #000);
+}
+
+
+
+interesting things: 
+varargs
+
+@mixin button($radius, $color) {
+	border-radius: $radius;
+	color: $color;
+}
+
+$properties: 4px, #000;
+
+.btn-a {
+	@include button($properties...);
+}
+
+//output
+
+.btn-a {
+	border-radius: 4px;
+	color: #000;
+}
+
+
+@mixin highlight($color, $side) {
+	border-#{$side}-color: $color;
+}
+
+
+.btn-a {
+	@include highlight(#100, right);
+}
+
+//Extend
+% placeholder selector
+
+%ir {
+	border: 0;
+	font: 0/0 a;
+	text-shadow: none;
+	color: transparent;
+	background-color: transparent;
+}
+
+.logo {
+	@extend %ir;
+}
+
+.social {
+	@extend %ir;
+}
+
+@function fluidize($target, $context){
+	@return ($target, $context) * 100%;
+}
+.sidebar {
+	width: fluidize(350px, 1000px);
+}
+
+$theme: dark;
+
+header {
+	@if $theme == dark {
+		background: #000;
+	} else {
+		background: #fff;
+	}
+}
+
+favorite: each
+
+$authors: nick aimee dan drew;
+
+@each $author in $authors {
+	.author-#{$author} {
+		background: url(author-#{$author}.jpg);
+	}
+}
+
+@for 
+.item {
+	position: absolute;
+	right: 0;
+	@for $i from 1 through 3 {
+		&.item-#{$i} {
+		top: $i * 30px;
+
+		}
+	}
+}
+
+@while
+
+$i:1;
+
+.item {
+	position: absolute;
+	right: 0;
+	@while $i < 4 {
+		&.item-#{$i} {
+			top: $i * 30px;
+		}
+	}
+}
+
+
+Mixins: similar sets of properties used multiple times with small variations. 
+
+Extend: Sets of properties that match exactly.
+
+Functions: commonly used operations to determine values. 
+
+
+@mixin button($color, $rounded: true) {
+	color: $color;
+	if $rounded == true {
+		border-radius: 4px;
+	}
+}
+
+.btn-a {
+	@include button(#000, false);
+
+}
+
+.btn-b {
+	@include button(#fff);
+}
+
+
+
+Utilities:
+
+round($number)
+ceil($number)
+floor($number)
+abs($number)
+min($list)
+max($list)
+percentage($number)
+
+h2 {
+	line-height: ceil(1.2);
+}
+
+Color Juggling
+
+$color-base: #ccc
+
+.addition {
+	background: $color-base + #112233;
+}
+
+.lighten {
+	color: lighten(color-base, 20%);
+}
+
+.darken (same way)
+
+.saturate(same way)
+
+.desaturate
+
+.mix(#ffff00, #107fc9, 30%);
+
+.grayscale
+
+.invert
+
+.complement
+
+//fluidize
+
+$context: 960px;
+
+.factory {
+  background: #fff;
+  width: percentage(600px/$context);
+}
+.highrise {
+  background: #797979;
+  width: percentage(300px/ $context);
+}
+
+//responsive
+
+@mixin respond-to($query) {
+	@media ($val: $query) {
+		@content
+	}
+}
+
+.sidebar {
+	border: 1px solid #ccc;
+	@include respond-to(max-width, 600px) {
+		float: right;
+		width: 30%;
+	}
+}
+
+The BEM pattern
+
+Block Element Modifiers
+Block Classes 
+Element Classes
+Modifier Classes
+
+.block__element
+
+.block__element--modifier
+
+.block--modifier
+
+modular css is all about abstraction
+
+
+@at-root:
+
+.parent {
+  ...
+  @at-root {
+    .child1 { ... }
+    .child2 { ... }
+  }
+  .step-child { ... }
+}
+Which would output the following:
+
+.parent { ... }
+.child1 { ... }
+.child2 { ... }
+.parent .step-child { ... }
+
+
+Interesting Mixin
+
+// Generate modifier color classes
+
+@mixin bg-colors($map) {
+	@each $theme, $color in $map {
+		&--#{$theme} {
+			background-color: $color;    
+		}
+	}
+}
+
+
+Example of interpolation:
+
+@mixin color_class($color) {
+	.#{$color} {
+		color: $color;
+		background-image: url("images/#{$color}.jpg");
+		@if $color == red {
+			border: 1px solid black;
+		}
+	}
+}
+
+@include color_class(blue);
+@include color_class(green);
+
+
+example of if/else
+
+mixin box($width) {
+	@if $width > 100px {
+		padding: 0px;
+	} @else if $width == 100px {
+		padding: 5px;
+	} @else {
+		padding: 10px;
+	}
+}
+
+div {
+	@include box(100px);
+}
+
+
+.box {
+	width: 100px;
+	height: 10px;
+}
+
+@for $i from 1 through 100 {
+	.boxLnth-child(#{$i}) {
+		background: darken(white, $i);
+	}
+}
+
+
+@each
+
+@each $member in thom, jonny, colin, phil {
+	.bandmember.#{$member} {
+		background: url('images/#{$member}.jpg');
+	}
+}
+
+@each $color in red, green, blue, yellow {
+	@include color_class($color);
+}
+
+
+
+@mixin band($name, $members...) {
+	@each $member in $members{
+		.#{$name}.#{$member} {
+			background: url("images/#{$member}.jpg");
+		}
+	}
+}
+
+@include band(radiohead, thom, jonny, colin, phil);
+@include band(nin, trent);
+
+//it's worth reviewing how to overwrite mixins' arguments. 
+
+@mixin box($size, $color, $display: inline) {
+	width: $size;
+	height: $size;
+	background: $color;
+}
+
+.box {
+	@include box($color: blue, $size: 20px);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
